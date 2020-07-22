@@ -14,7 +14,7 @@ output: github_document
 library(tidyverse)
 options(max.print=1000000)
 hawai <- read.csv(file =  "hawai.csv", header = TRUE)
-head(hawai)
+head(hawai,8 )
 ```
 
 
@@ -28,23 +28,23 @@ library("fpp2")
 hawai_ts <- ts(hawai %>% dplyr::select(-time),
                start = c(hawai$time[1], 1),
                frequency = 12)
-head(hawai_ts)
+head(hawai_ts, 24)
 autoplot(hawai_ts)
 ```
 
 
 On observe sur la figure la tendance globale de la quantité de CO2. Probablement, cette tendance à la hausse est expliquée par l'augmentation des activités humaines mobilisant des énergies fossiles qui permettent de libérer une quantité significative de CO2.
 
-## Séparation la série en partie d'entraînement (environ 70% des données) et en partie test
+## Séparation la série en partie d'entraînement (environ 70% des données) et en partie *test*
 
 Pour créer un modèle permettant de prédire la quantité de CO2 atmosphérique mesurée à Mauna Loa Observatory* à Hawai, nous allons répartir nos données en 2 blocs : le premier bloc servira de données d'*entrainement* pour générer le modèle et le deuxième bloc sera utilisé comme données *test*.
 
 ```{r}
 hawai_train <- head(hawai_ts, round(length(hawai_ts) * 0.7)) ## le premier bloc qui constitue les données d'entrainement (70%)
-head(hawai_train)
+head(hawai_train, 24)
 h <- length(hawai_ts) - length(hawai_train)
 hawai_test <- tail(hawai_ts, h) ## les 30% restant qui comprennent les données tests
-head(hawai_test)
+head(hawai_test, 24)
 
 autoplot(hawai_train) + autolayer(hawai_test)
 ```

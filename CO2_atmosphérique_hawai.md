@@ -27,7 +27,7 @@ library(tidyverse)
 ``` r
 options(max.print=1000000)
 hawai <- read.csv(file =  "hawai.csv", header = TRUE)
-head(hawai)
+head(hawai,8 )
 ```
 
     ##       time      CO2
@@ -37,6 +37,8 @@ head(hawai)
     ## 4 1958.417 317.4333
     ## 5 1958.500 315.6250
     ## 6 1958.583 314.9500
+    ## 7 1958.667 313.5000
+    ## 8 1958.750 313.5000
 
 ## création de la série temporelle
 
@@ -70,11 +72,17 @@ library("fpp2")
 hawai_ts <- ts(hawai %>% dplyr::select(-time),
                start = c(hawai$time[1], 1),
                frequency = 12)
-head(hawai_ts)
+head(hawai_ts, 24)
 ```
 
-    ##           Mar      Apr      May      Jun      Jul      Aug
-    ## 1958 316.1000 317.2000 317.4333 317.4333 315.6250 314.9500
+    ##           Jan      Feb      Mar      Apr      May      Jun      Jul      Aug
+    ## 1958                   316.1000 317.2000 317.4333 317.4333 315.6250 314.9500
+    ## 1959 315.5000 316.7000 316.7333 317.6750 318.3250 318.0250 316.5250 314.9000
+    ## 1960 316.3800 316.9750                                                      
+    ##           Sep      Oct      Nov      Dec
+    ## 1958 313.5000 313.5000 313.4250 314.7000
+    ## 1959 313.8250 313.4000 314.8750 315.5250
+    ## 1960
 
 ``` r
 autoplot(hawai_ts)
@@ -87,7 +95,7 @@ Probablement, cette tendance à la hausse est expliquée par
 l’augmentation des activités humaines mobilisant des énergies fossiles
 qui permettent de libérer une quantité significative de CO2.
 
-## Séparation la série en partie d’entraînement (environ 70% des données) et en partie test
+## Séparation la série en partie d’entraînement (environ 70% des données) et en partie *test*
 
 Pour créer un modèle permettant de prédire la quantité de CO2
 atmosphérique mesurée à Mauna Loa Observatory\* à Hawai, nous allons
@@ -97,21 +105,32 @@ utilisé comme données *test*.
 
 ``` r
 hawai_train <- head(hawai_ts, round(length(hawai_ts) * 0.7)) ## le premier bloc qui constitue les données d'entrainement (70%)
-head(hawai_train)
+head(hawai_train, 24)
 ```
 
-    ##           Mar      Apr      May      Jun      Jul      Aug
-    ## 1958 316.1000 317.2000 317.4333 317.4333 315.6250 314.9500
+    ##           Jan      Feb      Mar      Apr      May      Jun      Jul      Aug
+    ## 1958                   316.1000 317.2000 317.4333 317.4333 315.6250 314.9500
+    ## 1959 315.5000 316.7000 316.7333 317.6750 318.3250 318.0250 316.5250 314.9000
+    ## 1960 316.3800 316.9750                                                      
+    ##           Sep      Oct      Nov      Dec
+    ## 1958 313.5000 313.5000 313.4250 314.7000
+    ## 1959 313.8250 313.4000 314.8750 315.5250
+    ## 1960
 
 ``` r
 h <- length(hawai_ts) - length(hawai_train)
 hawai_test <- tail(hawai_ts, h) ## les 30% restant qui comprennent les données tests
-head(hawai_test)
+head(hawai_test, 24)
 ```
 
-    ##          Jan     Feb     Mar     Apr May Jun Jul Aug Sep Oct     Nov     Dec
-    ## 1988                                                         350.000 351.360
-    ## 1989 352.775 353.000 353.600 355.360
+    ##          Jan     Feb     Mar     Apr     May     Jun     Jul     Aug     Sep
+    ## 1988                                                                        
+    ## 1989 352.775 353.000 353.600 355.360 355.600 355.125 353.860 351.575 349.860
+    ## 1990 353.650 354.650 355.480 356.175 357.075 356.080 354.675 352.900 350.940
+    ##          Oct     Nov     Dec
+    ## 1988         350.000 351.360
+    ## 1989 350.050 351.200 352.480
+    ## 1990 351.225
 
 ``` r
 autoplot(hawai_train) + autolayer(hawai_test)
